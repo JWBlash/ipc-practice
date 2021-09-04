@@ -22,7 +22,7 @@ int nested(char *buf)
         exit(EXIT_FAILURE);
     }
 
-    cpid = fork(); // again, two processes. In here, the parent is the child of the process running main()
+    cpid = fork();
     if (cpid == -1)
     {
         perror("fork");
@@ -33,14 +33,14 @@ int nested(char *buf)
     if (cpid == 0)
     {
         close(pipefd[1]); // close unused write end (we're only reading what comes from the parent)
-        printf("%d: Child process: cpid = %d, PID = %d\n", getpid(), cpid, getpid());
+        printf("%d: NESTED Child process starting.\n", getpid());
 
         while (read(pipefd[0], &buf, 1) > 0)
             write(STDOUT_FILENO, &buf, 1);
 
         write(STDOUT_FILENO, "\n", 1);
         close(pipefd[0]); //close pipe
-        printf("%d: Child process %d: taking a lil nap\n", getpid(), getpid());
+        printf("%d: Taking a nap.\n", getpid());
         sleep(5);
         _exit(EXIT_SUCCESS);
     }
@@ -48,12 +48,12 @@ int nested(char *buf)
     {
         // do the parent process thing here
         close(pipefd[0]); //close unused read end (only writing to the child, not reading from it)
-        printf("%d: Parent process: cpid = %d, PID = %d\n", getpid(), cpid, getpid());
+        printf("%d: NESTED parent process starting.\n", getpid());
 
         write(pipefd[1], buf, strlen(buf));
         close(pipefd[1]);
-        printf("%d: Waiting for child to exit...\n", getpid());
+        printf("%d: Waiting for nested child (%d) to exit...\n", getpid(), cpid);
         wait(NULL);
-        _exit(EXIT_SUCCESS);
+        return 0;
     }
 }

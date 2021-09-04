@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    cpid = fork(); // now there are two processes. The child will see "cpid == 0", the parent will see "cpid == else" (the child process pid).
+    cpid = fork(); 
     if (cpid == -1)
     {
         perror("fork");
@@ -33,27 +33,29 @@ int main(int argc, char *argv[])
     }
 
     if (cpid == 0)
-    {                                                  /* Child reads from pipe */
-        close(pipefd[1]); /* Close unused write end */ //the child still has both ends of the pipe, but it's only using one. Hence the close.
-        printf("%d: Child process: cpid = %d, PID = %d\n", getpid(), cpid, getpid());
+    {            
+        close(pipefd[1]); /* Close unused write end */ 
+        printf("%d: Child process starting.\n", getpid());
 
         while (read(pipefd[0], &buf, 1) > 0)
             write(STDOUT_FILENO, &buf, 1);
 
         write(STDOUT_FILENO, "\n", 1);
         close(pipefd[0]);
+        printf("%d: Nested routine starting.\n", getpid());
         nested(argv[1]);
-        printf("%d: Child process %d: taking a lil nap\n", getpid(), getpid());
+        printf("%d: Returned from nested routine.\n", getpid());
+        printf("%d: Taking a nap.\n", getpid());
         sleep(5);
         _exit(EXIT_SUCCESS);
     }
     else
-    {                                                 /* Parent writes argv[1] to pipe */
-        close(pipefd[0]); /* Close unused read end */ //the parent still has both ends of the pipe, but it's only using one. Hence the close.
-        printf("%d: Parent process: cpid = %d, PID = %d\n", getpid(), cpid, getpid());
+    {
+        close(pipefd[0]); /* Close unused read end */ 
+        printf("%d: Parent process starting.\n", getpid());
         write(pipefd[1], argv[1], strlen(argv[1]));
         close(pipefd[1]); /* Reader will see EOF */
-        printf("%d: Waiting for child to exit...\n", getpid());
+        printf("%d: Waiting for child (%d) to exit...\n", getpid(), cpid);
         wait(NULL); /* Wait for child */
         exit(EXIT_SUCCESS);
     }
