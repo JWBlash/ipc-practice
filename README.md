@@ -1,6 +1,5 @@
 # ipc-practice
 
-TODOs:
-- Write a client and server program that opens a TCP socket between them
-  - Will require socket(), connect(), listen(), and accept()
+In this repo I'm working on some stuff in C that I'm not super comfortable with, that I... want to be
 
+Come look at my bad code! :)
