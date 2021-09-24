@@ -2,6 +2,6 @@ all:
 	gcc -c *.c; gcc -o pipes *.o
 
 clean:
-	rm *.o pipes
+	rm -f *.o pipes
 
 .PHONY: all clean

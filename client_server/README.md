@@ -16,3 +16,6 @@ From: https://stackoverflow.com/questions/176409/build-a-simple-http-server-in-c
 
 - Write a client and server program that opens a TCP socket between them
   - Will require socket(), connect(), listen(), and accept()
+
+_Note:_ I want to store data in the "server" with some data structure I write in C, like a queue or linked list or something,
+for the sake of data structure practice.

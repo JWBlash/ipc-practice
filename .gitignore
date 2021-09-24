@@ -1,1 +1,5 @@
+pipe/*.o
 pipe/pipes
+client_server/*.o
+client_server/client
+client_server/server
