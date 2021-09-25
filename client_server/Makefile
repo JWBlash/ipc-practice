@@ -1,5 +1,4 @@
 all: client server
-	echo "done!"
 
 client:
 	gcc -c client.c; gcc -o client client.o

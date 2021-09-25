@@ -8,14 +8,12 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-int main()
+int main(void)
 {
-
-    uint64_t sockfd, confd;
-    struct sockaddr_in serv, cli; //IPv4 Socket address struct
-    socklen_t cli_size;
-    char cli_message[2000];
-    int read_size;
+    uint32_t sockfd, confd, read_size;
+    size_t pos;
+    struct sockaddr_in serv; //IPv4 Socket address struct
+    char cli_message[1024];
 
     printf("Server starting...\n");
 
@@ -53,13 +51,6 @@ int main()
         return 1;
     }
     printf("Waiting for incoming connection.\n");
-    // make sure cli struct is 0'd
-    //memset(&cli, 0, sizeof(cli));
-
-    // Accepts an incoming connection on the defined socket, turns it into a request
-    // If we don't care about the client's identity, you can set args 2/3 to NULL
-    //cli_size = sizeof(cli);
-    //confd = accept(sockfd, (struct sockaddr *)&cli, &cli_size);
 
     confd = accept(sockfd, NULL, NULL);
     if (confd == -1)
@@ -69,23 +60,39 @@ int main()
     }
     printf("Connection accepted!\n");
 
+    memset(cli_message, 0, sizeof(cli_message));
+    pos = 0;
+    while (1) 
+    {
+        read_size = recv(confd, cli_message + pos, sizeof(cli_message) - pos, 0);
+        if (read_size == 0) 
+        {
+            printf("Client terminated session.\n");
+            fflush(stdout);
+            break;
+        }
+        else if (read_size == -1) 
+        {
+            perror("recv()");
+            return 1;
+        }
+        pos += read_size;
+        char *end = strstr(cli_message, "\r\n\r\n");
+        if (end) 
+        {
+            size_t msg_len = end - cli_message;
+        }
+
+    }
+
+    /*
     while ((read_size = recv(confd, cli_message, sizeof(cli_message), 0)) > 0)
     {
         write(STDOUT_FILENO, cli_message, strlen(cli_message));
     }
+    */
 
-    if (read_size == 0)
-    {
-        printf("Client terminated session.\n");
-        fflush(stdout);
-    }
-    else if (read_size == -1)
-    {
-        perror("recv()");
-        return 1;
-    }
-
-    printf("Closing socket.");
+    printf("Closing socket.\n");
     if (close(sockfd) == -1)
     {
         perror("close()");
