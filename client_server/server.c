@@ -10,13 +10,14 @@
 
 int main()
 {
-    printf("Server starting...\n");
 
     uint64_t sockfd, confd;
     struct sockaddr_in serv, cli; //IPv4 Socket address struct
     socklen_t cli_size;
     char cli_message[2000];
     int read_size;
+
+    printf("Server starting...\n");
 
     // Defines a socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
